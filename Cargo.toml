@@ -1,0 +1,8 @@
+[package]
+name = "programme_train_auto"
+version = "0.1.0"
+authors = ["code"]
+edition = "2018"
+
+[dependencies]
+json = "0.11.14"
