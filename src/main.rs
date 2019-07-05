@@ -11,6 +11,7 @@ mod gpio_access;
 
 fn main() {
 
+    let gpio = gpio_access::gpio_access::init();
     let data = fs::read_to_string("save.txt").expect("could not read file");
     let data: Vec<&str> = data.split('\n').collect();
     let auth = object!{
@@ -51,10 +52,20 @@ fn main() {
             "authentificated" => {
                 fs::write("save.txt", std::format!("{}\n{}",data[0], obj["id"].as_str().expect("no valid id provided")))
                 .expect("writing to file failed");
+                break;
                 
             },
+            "togglePin" => {
+                println!("New pin switch requested ! ");
+                let pin_number = obj["pin"].as_u8().expect("invalid pin number");
+                let duration = if obj.is_null() {None} 
+                    else {Some(obj["duration"].as_i64().expect("invalid duration value"))};
+                let state = gpio_access::gpio_access::str_to_GpioState(
+                    obj["state"].as_str().expect("invalid state string")
+                ).expect("");
 
-
+                gpio_access::gpio_access::toggle_pin(&gpio, pin_number, duration, state);
+            }
 
             _=>panic!("Uncovered message type")
         }
